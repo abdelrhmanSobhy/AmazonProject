@@ -6,7 +6,7 @@ import {
   updateQuantity,
 } from "../../data/cart.js";
 import { getProduct } from "../../data/products.js";
-import { currencyFormatter } from "../utils/money.js";
+import currencyFormatter from "../utils/money.js";
 
 import {
   calculateDeliveryDate,
@@ -45,9 +45,7 @@ export function renderOrderSummary() {
       <div class="product-name">
       ${matchingProduct.name}
       </div>
-      <div class="product-price">$${currencyFormatter(
-        matchingProduct.priceCents
-      )}</div>
+      <div class="product-price">$${matchingProduct.getPrice()}</div>
       <div class="product-quantity">
       <span> Quantity: <span class="quantity-label js-quantity-label-${
         matchingProduct.id

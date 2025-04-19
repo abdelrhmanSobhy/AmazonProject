@@ -7,8 +7,7 @@
 */
 
 import { cart, addToCart } from "../data/cart.js";
-import { products } from "../data/products.js";
-import { currencyFormatter } from "./utils/money.js";
+import { products, loadProducts} from "../data/products.js";
 
 const productContainer = document.querySelector(".products-grid");
 
@@ -16,11 +15,16 @@ const productContainer = document.querySelector(".products-grid");
 
 // generate the HTML
 
-let productsHTML = "";
+loadProducts(renderProductsGrid);
 
-products.forEach((product) => {
-  // Accumulator Pattern
-  productsHTML += `<div class="product-container">
+
+function renderProductsGrid(){
+
+  let productsHTML = "";
+
+  products.forEach((product) => {
+    // Accumulator Pattern
+    productsHTML += `<div class="product-container">
           <div class="product-image-container">
             <img
               class="product-image"
@@ -35,16 +39,14 @@ products.forEach((product) => {
           <div class="product-rating-container">
             <img
               class="product-rating-stars"
-              src="images/ratings/rating-${product.rating.stars * 10}.png"
+              src="${product.getStarUrl()}"
             />
             <div class="product-rating-count link-primary">${
               product.rating.count
             }</div>
           </div>
 
-          <div class="product-price">$${currencyFormatter(
-            product.priceCents
-          )}</div>
+          <div class="product-price">$${product.getPrice()}</div>
 
           <div class="product-quantity-container">
             <select class="js-quantity-selector-${product.id}">
@@ -61,6 +63,11 @@ products.forEach((product) => {
             </select>
           </div>
 
+            
+
+
+              ${product.extraInfoHTML()}
+
           <div class="product-spacer"></div>
 
           <div class="added-to-cart js-added-to-cart-${product.id}">
@@ -76,33 +83,38 @@ products.forEach((product) => {
 
 productContainer.innerHTML = productsHTML;
 
+
+//   ${ product instanceof Clothing ? `<a href="${product.sizeChartLink}">Size Chart</a>` : ``}
+
+
 const cartBtn = document.querySelectorAll(".js-add-to-cart");
 let cartQuantityDom = document.querySelector(".js-cart-quantity");
 
 cartQuantityDom.innerHTML = updateCartQuantity();
 
-export function updateCartQuantity() {
+ function updateCartQuantity() {
   let cartQuantity = 0;
-
+  
   cart.forEach((cartItem) => {
     cartQuantity += cartItem.quantity;
   });
-
+  
   return cartQuantity;
 }
 
 cartBtn.forEach((button) => {
   button.addEventListener("click", () => {
     const productId = button.dataset.productId;
-
+    
     document
-      .querySelector(`.js-added-to-cart-${productId}`)
-      .classList.add("added-message");
-
+    .querySelector(`.js-added-to-cart-${productId}`)
+    .classList.add("added-message");
+    
     addToCart(productId);
-
+    
     const cartQuantity = updateCartQuantity();
-
+    
     cartQuantityDom.innerHTML = cartQuantity;
   });
 });
+}
